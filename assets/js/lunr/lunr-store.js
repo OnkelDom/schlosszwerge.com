@@ -1,49 +1,19 @@
----
-layout: none
----
-
-var store = [
-  {%- for c in site.collections -%}
-    {%- if forloop.last -%}
-      {%- assign l = true -%}
-    {%- endif -%}
-    {%- assign docs = c.docs | where_exp:'doc','doc.search != false' -%}
-    {%- for doc in docs -%}
-      {%- if doc.header.teaser -%}
-        {%- capture teaser -%}{{ doc.header.teaser }}{%- endcapture -%}
-      {%- else -%}
-        {%- assign teaser = site.teaser -%}
-      {%- endif -%}
-      {
-        "title": {{ doc.title | jsonify }},
-        "excerpt":
-          {%- if site.search_full_content == true -%}
-            {{ doc.content | newline_to_br |
-              replace:"<br />", " " |
-              replace:"</p>", " " |
-              replace:"</h1>", " " |
-              replace:"</h2>", " " |
-              replace:"</h3>", " " |
-              replace:"</h4>", " " |
-              replace:"</h5>", " " |
-              replace:"</h6>", " "|
-            strip_html | strip_newlines | jsonify }},
-          {%- else -%}
-            {{ doc.content | newline_to_br |
-              replace:"<br />", " " |
-              replace:"</p>", " " |
-              replace:"</h1>", " " |
-              replace:"</h2>", " " |
-              replace:"</h3>", " " |
-              replace:"</h4>", " " |
-              replace:"</h5>", " " |
-              replace:"</h6>", " "|
-            strip_html | strip_newlines | truncatewords: 50 | jsonify }},
-          {%- endif -%}
-        "categories": {{ doc.categories | jsonify }},
-        "tags": {{ doc.tags | jsonify }},
-        "url": {{ doc.url | relative_url | jsonify }},
-        "teaser": {{ teaser | relative_url | jsonify }}
-      }{%- unless forloop.last and l -%},{%- endunless -%}
-    {%- endfor -%}
-  {%- endfor -%}]
+var store = [{
+        "title": "Handy und Aufnahmeverbot",
+        "excerpt":"Allgemein möchten wir darauf hinweisen, dass wir von allen Eltern, Besuchern oder sonstigen Personen im Interesse einer guten Kommunikation erwarten, dass Handys während der kurzen zeit bei uns- insbesondere während der Bring- und Abholphasen- NICHT benutzt werden. Wir berufen uns dabei auf unser Hausrecht und sprechen des Weiteren unabhängig von...","categories": [],
+        "tags": [],
+        "url": "/aktuelles/aufnahmeverbot",
+        "teaser": null
+      },{
+        "title": "Ideen Geburtstagsfrühstück",
+        "excerpt":"Geburtstagsfrühstück Da wir in letzter Zeit oft gefragt werden, was Sie als Geburtstagsfrühstück vorbereiten können, haben wir Ihnen hier ein paar Vorschläge/Ideen erarbeitet. Die Eltern, die etwas vorbereiten wollen, können sich daraus selbst aussuchen und kombinieren was Sie davon mitbringen möchten. Für Rückfragen stehen wir Ihnen jederzeit zur Verfügung. Vorschläge...","categories": [],
+        "tags": [],
+        "url": "/aktuelles/geburtstagsfruehstueck",
+        "teaser": null
+      },{
+        "title": "Die Schlosszwerge führen Kita-App ein",
+        "excerpt":"Die Schlosszwerge starten Anfang 2023 mit der Kita-App “Famly” ein neues digitales Angebot für Eltern. Die Schlosszwerge starten im Februar 2023 ein neues Angebot für die Eltern der betreuten Kinder: Künftig gibt es mit “Famly” eine eigene Kita-App fürs Smartphone, mit der die Familien aus erster Hand und in Echtzeit...","categories": [],
+        "tags": [],
+        "url": "/aktuelles/einfuehrung-kita-app",
+        "teaser": null
+      }]

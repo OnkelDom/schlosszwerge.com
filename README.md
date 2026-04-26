@@ -1,63 +1,55 @@
 # schlosszwerge.com
 
-Website des Vereins `Die Schlosszwerge e.V.` fuer `schlosszwerge.com`.
+Statische Website fuer `schlosszwerge.com`.
 
-Die Seite bleibt vorerst ein Jekyll-Projekt auf Basis von Minimal Mistakes. Inhaltliche Aenderungen erfolgen weiterhin ueber Markdown-Dateien und die vorhandene Navigation. Der Unterschied zur bisherigen GitHub-Pages-Auslieferung: GitHub Actions baut die Seite und deployed das generierte `_site/` per SFTP auf den Hetzner-Webspace.
+Dieses Repository enthaelt die fertige HTML-Version der bisherigen Schlosszwerge-Website. Jekyll wird hier nicht mehr im Produktiv-Workflow benoetigt. Aenderungen erfolgen direkt an HTML-, CSS-, JS- oder Asset-Dateien.
 
 ## Architektur
 
 - Quelle: GitHub Repository `OnkelDom/schlosszwerge.com`
-- Branch: `master`
-- Generator: Jekyll
-- Theme: Minimal Mistakes
+- Branch: `main`
+- Auslieferung: statische Dateien
 - Zielsystem: Hetzner Webspace per SFTP
 - Zielpfad: Domain-Ordner `schlosszwerge.com`
 - Deployment: `.github/workflows/deploy.yml`
 
-## Inhalt bearbeiten
+## Bearbeitung
 
-Neue oder bestehende Seiten liegen unter `_pages/`.
+HTML-Dateien direkt bearbeiten:
 
 ```bash
-vim _pages/konzept.md
-vim _pages/team.md
+vim index.html
+vim einrichtung/team/index.html
+vim anmeldung/index.html
 ```
 
-Navigation bearbeiten:
+Styles und Skripte liegen unter:
 
 ```bash
-vim _data/navigation.yml
-```
-
-Aktuelles/Blogbeitraege liegen unter `_posts/`.
-
-```bash
-vim _posts/2026-01-01-beispiel.md
+vim assets/css/main.css
+vim assets/js/main.min.js
 ```
 
 ## Lokale Vorschau
 
-Ruby und Bundler muessen lokal installiert sein.
-
 ```bash
-bundle install
-bundle exec jekyll serve
+python3 -m http.server 8083
 ```
 
 Danach im Browser:
 
 ```text
-http://localhost:4000/
+http://localhost:8083/
 ```
 
 ## Deployment
 
-Der Deploy laeuft automatisch bei jedem Push auf `master`.
+Der Deploy laeuft automatisch bei jedem Push auf `main`.
 
 Manueller Start:
 
 ```bash
-gh workflow run deploy.yml --repo OnkelDom/schlosszwerge.com --ref master
+gh workflow run deploy.yml --repo OnkelDom/schlosszwerge.com --ref main
 ```
 
 Status pruefen:
@@ -82,6 +74,7 @@ HETZNER_TARGET_DIR
 
 ## Migrationshinweise
 
-- `CNAME` wird nicht mehr verwendet, weil die produktive Auslieferung ueber Hetzner erfolgen soll.
-- Die bisherige produktive GitHub-Pages-Seite bleibt unberuehrt, solange DNS nicht auf Hetzner zeigt.
-- Die Berechtigung fuer `Birdy1980` wurde im neuen Repository eingeladen und muss bei Bedarf von der Person angenommen werden.
+- `main` ist der Hauptbranch.
+- `CNAME` wird nicht mehr verwendet, weil die Auslieferung ueber Hetzner erfolgt.
+- Die statische Seite wurde aus dem erfolgreichen Hetzner/Jekyll-Build uebernommen.
+- Die Einladung fuer `Birdy1980` mit Schreibrechten ist im neuen Repository ausstehend.
