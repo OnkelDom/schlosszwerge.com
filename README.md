@@ -1,39 +1,87 @@
-# Internetauftritt des Vereins - Die Schlosszwerge e.V.
+# schlosszwerge.com
 
-[![pages-build-deployment](https://github.com/schlosszwerge/schlosszwerge.github.io/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/schlosszwerge/schlosszwerge.github.io/actions/workflows/pages/pages-build-deployment)
-[![Jekyll](https://img.shields.io/badge/jekyll-%3E%3D%203.7-blue.svg)](https://jekyllrb.com/)
-[![Ruby gem](https://img.shields.io/gem/v/minimal-mistakes-jekyll.svg)](https://rubygems.org/gems/minimal-mistakes-jekyll)
-[![Tip Me via PayPal](https://img.shields.io/badge/PayPal-tip%20me-green.svg?logo=paypal)](https://www.paypal.me/Lenhardt1987)
+Website des Vereins `Die Schlosszwerge e.V.` fuer `schlosszwerge.com`.
 
-[Minimal Mistakes Jekyll theme](https://mmistakes.github.io/minimal-mistakes/)
+Die Seite bleibt vorerst ein Jekyll-Projekt auf Basis von Minimal Mistakes. Inhaltliche Aenderungen erfolgen weiterhin ueber Markdown-Dateien und die vorhandene Navigation. Der Unterschied zur bisherigen GitHub-Pages-Auslieferung: GitHub Actions baut die Seite und deployed das generierte `_site/` per SFTP auf den Hetzner-Webspace.
 
-# Inhalt
+## Architektur
 
-**Links:**
-* [Git-Ccheatsheet](http://git-cheatsheet.com/)
-* [Markdown](https://www.markdownguide.org/cheat-sheet/)
+- Quelle: GitHub Repository `OnkelDom/schlosszwerge.com`
+- Branch: `master`
+- Generator: Jekyll
+- Theme: Minimal Mistakes
+- Zielsystem: Hetzner Webspace per SFTP
+- Zielpfad: Domain-Ordner `schlosszwerge.com`
+- Deployment: `.github/workflows/deploy.yml`
 
-## Neue Seite anlegen
+## Inhalt bearbeiten
 
-Im Ordner **_pages** die entsprechende Seite im [Markdown](https://www.markdownguide.org/cheat-sheet/) format erstellen. 
+Neue oder bestehende Seiten liegen unter `_pages/`.
 
-Die Seite dann unter [_data/navigation.yml](_data/navigation.yml) einbinden.
+```bash
+vim _pages/konzept.md
+vim _pages/team.md
+```
 
-## Neuen Blog Post anlegen
+Navigation bearbeiten:
 
-Im Ordner **_posts** eine neue Blogseite wie in den vorhandenen Beispielen erstellen. Die Seite wird dann automatisch nach dem Commit/Push veröffentlicht.
+```bash
+vim _data/navigation.yml
+```
 
-## Inhalt veröffentlichen
+Aktuelles/Blogbeitraege liegen unter `_posts/`.
 
-Nach dem erstellen des Inhalts muss dieser innerhalb der Git-Struktur hochgeladen werden.
+```bash
+vim _posts/2026-01-01-beispiel.md
+```
 
-### Dateien zu neuem Commit hinzufügen
-`git add -A`
+## Lokale Vorschau
 
-### Commit mit Nachricht erstellen
-`git commit -m "Neuer Inhalt"`
+Ruby und Bundler muessen lokal installiert sein.
 
-### Inhalt hochladen
-`git push`
+```bash
+bundle install
+bundle exec jekyll serve
+```
 
-Status: https://github.com/schlosszwerge/schlosszwerge.github.io/actions
+Danach im Browser:
+
+```text
+http://localhost:4000/
+```
+
+## Deployment
+
+Der Deploy laeuft automatisch bei jedem Push auf `master`.
+
+Manueller Start:
+
+```bash
+gh workflow run deploy.yml --repo OnkelDom/schlosszwerge.com --ref master
+```
+
+Status pruefen:
+
+```bash
+gh run list --repo OnkelDom/schlosszwerge.com --limit 5
+```
+
+## GitHub Secrets
+
+Der Workflow erwartet folgende Repository-Secrets:
+
+```text
+HETZNER_HOST
+HETZNER_PORT
+HETZNER_USER
+HETZNER_PASSWORD
+HETZNER_TARGET_DIR
+```
+
+`HETZNER_TARGET_DIR` ist `schlosszwerge.com`.
+
+## Migrationshinweise
+
+- `CNAME` wird nicht mehr verwendet, weil die produktive Auslieferung ueber Hetzner erfolgen soll.
+- Die bisherige produktive GitHub-Pages-Seite bleibt unberuehrt, solange DNS nicht auf Hetzner zeigt.
+- Die Berechtigung fuer `Birdy1980` wurde im neuen Repository eingeladen und muss bei Bedarf von der Person angenommen werden.

@@ -1,0 +1,54 @@
+name: Build and deploy to Hetzner
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
+
+      - name: Build Jekyll site
+        run: bundle exec jekyll build
+        env:
+          JEKYLL_ENV: production
+
+      - name: Install deployment tools
+        run: sudo apt-get update && sudo apt-get install -y lftp
+
+      - name: Deploy generated site via SFTP
+        env:
+          HETZNER_HOST: ${{ secrets.HETZNER_HOST }}
+          HETZNER_PORT: ${{ secrets.HETZNER_PORT }}
+          HETZNER_USER: ${{ secrets.HETZNER_USER }}
+          HETZNER_PASSWORD: ${{ secrets.HETZNER_PASSWORD }}
+          HETZNER_TARGET_DIR: ${{ secrets.HETZNER_TARGET_DIR }}
+        run: |
+          test -n "$HETZNER_HOST"
+          test -n "$HETZNER_PORT"
+          test -n "$HETZNER_USER"
+          test -n "$HETZNER_PASSWORD"
+          test -n "$HETZNER_TARGET_DIR"
+          test -d _site
+
+          lftp -u "$HETZNER_USER","$HETZNER_PASSWORD" -p "$HETZNER_PORT" sftp://"$HETZNER_HOST" <<EOF
+          set sftp:auto-confirm yes
+          mirror --reverse --delete --verbose _site/ "$HETZNER_TARGET_DIR"/
+          bye
+          EOF
