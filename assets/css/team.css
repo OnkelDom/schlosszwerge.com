@@ -1,0 +1,5 @@
+.team-heading{ text-align: center; margin: 1rem 0; }
+.team-photo-wrap{ text-align: center; }
+.team-photo{ max-width: 100%; height: auto; display: block; margin: 1.5rem auto; }
+.team-caption{ text-align: center; font-size: 0.9rem; margin-top: 0.5rem; color: #333; }
+.team-caption.small{ margin-top: 0.25rem; font-size: 0.85rem; }
