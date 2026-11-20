@@ -29,10 +29,4 @@ if (header && toggle && menu) {
     }
   });
 
-  /* Auf dem Smartphone ist das Themenmenü zunächst platzsparend geschlossen. */
-  if (window.matchMedia('(max-width: 700px)').matches) {
-    document.querySelectorAll('.section-menu').forEach((section) => {
-      section.open = false;
-    });
-  }
 }
