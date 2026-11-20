@@ -1,2 +1,6 @@
 .DS_Store
 *.sw[p_]
+
+__pycache__/
+
+.preview-site/

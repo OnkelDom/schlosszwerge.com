@@ -1,0 +1,47 @@
+name: Deploy decision preview
+
+on:
+  push:
+    branches: [codex/modern-html-css-website]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-schlosszwerge-preview
+  cancel-in-progress: false
+
+jobs:
+  preview:
+    if: github.ref == 'refs/heads/codex/modern-html-css-website'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate source website
+        run: python3 .github/scripts/check_site.py
+      - name: Package preview with indexing disabled
+        run: python3 .github/scripts/build_preview.py --output "$RUNNER_TEMP/schlosszwerge-preview" --base-url https://dev.schlosszwerge.com
+      - name: Install deployment tools
+        run: sudo apt-get update && sudo apt-get install -y lftp
+      - name: Upload to the isolated preview directory
+        env:
+          HETZNER_HOST: ${{ secrets.HETZNER_HOST }}
+          HETZNER_PORT: ${{ secrets.HETZNER_PORT }}
+          HETZNER_USER: ${{ secrets.HETZNER_USER }}
+          HETZNER_PASSWORD: ${{ secrets.HETZNER_PASSWORD }}
+          HETZNER_TARGET_DIR: ${{ secrets.HETZNER_TARGET_DIR }}
+        run: |
+          test -n "$HETZNER_HOST"
+          test -n "$HETZNER_PORT"
+          test -n "$HETZNER_USER"
+          test -n "$HETZNER_PASSWORD"
+          test -n "$HETZNER_TARGET_DIR"
+          production_parent="$(dirname "$HETZNER_TARGET_DIR")"
+          preview_target="$production_parent/schlosszwerge-vorschau"
+          test "${preview_target##*/}" = "schlosszwerge-vorschau"
+          test "$preview_target" != "$HETZNER_TARGET_DIR"
+          lftp -u "$HETZNER_USER","$HETZNER_PASSWORD" -p "$HETZNER_PORT" sftp://"$HETZNER_HOST" <<EOF
+          set sftp:auto-confirm yes
+          mirror --reverse --delete --verbose --exclude-glob .preview-build --exclude-glob .well-known "$RUNNER_TEMP/schlosszwerge-preview"/ "$preview_target"/
+          bye
+          EOF
+      - name: Verify HTTPS and indexing protection
+        run: python3 .github/scripts/check_preview_http.py --base-url https://dev.schlosszwerge.com
