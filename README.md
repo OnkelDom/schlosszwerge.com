@@ -152,4 +152,4 @@ Vor einer Veröffentlichung dieser Textfassung mit der Leitung abgleichen:
 - Aktueller Stand des vollständigen pädagogischen Konzepts und des bisher genannten Würzburger Sprachprogramms. Veraltete Ankündigungen werden im Text nicht als laufende Angebote dargestellt.
 - Geltende Beiträge, Eingewöhnungsablauf und verfügbare Stellen. Keine unbestätigten Preise, Zeitversprechen oder Arbeitgeberleistungen ergänzt.
 
-Diese Inhaltsrunde ist zunächst lokal. Ein Push auf den Entwurfsbranch löst das Hetzner-Vorschaudeployment aus und wird deshalb für eine rein lokale Abstimmung zurückgehalten.
+Die Inhaltsrunde und die Entfernung des seitlichen Themenmenüs sind zur Veröffentlichung auf `dev.schlosszwerge.com` freigegeben. Ein Push auf den Entwurfsbranch aktualisiert diese Entscheidungsvorschau. Alle Unterseiten verwenden eine zentrierte Lesespalte; die Einrichtungsthemen sind über die Startseite erreichbar. Der Draft bleibt ungemergt.
