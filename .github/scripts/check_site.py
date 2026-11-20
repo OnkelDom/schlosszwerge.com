@@ -86,7 +86,7 @@ for path, page in pages.items():
             errors.append(f"{label}: missing shared CSS or navigation script")
         if not {"/impressum/", "/datenschutz/"}.issubset(page.links):
             errors.append(f"{label}: missing legal links")
-        if label not in {"index.html", "404.html"}:
+        if label not in {"index.html", "404.html", "impressum/index.html", "datenschutz/index.html"}:
             for topic in TOPICS:
                 if f"/einrichtung/{topic}/" not in page.links:
                     errors.append(f"{label}: missing topic {topic}")
