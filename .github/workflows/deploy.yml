@@ -18,6 +18,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Validate site before deployment
+        run: python3 .github/scripts/check_site.py
+
       - name: Install deployment tools
         run: sudo apt-get update && sudo apt-get install -y lftp
 
