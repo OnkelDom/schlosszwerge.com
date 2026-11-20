@@ -141,3 +141,15 @@ python3 .github/scripts/check_preview_http.py --base-url https://dev.schlosszwer
 ```
 
 Das lokale Paket liegt in `.preview-site/` und wird von Git ignoriert. Die normale lokale Vorschau der bearbeitbaren Quelldateien funktioniert weiterhin wie oben beschrieben.
+
+## Lokaler Inhaltsentwurf (20.11.2026)
+
+Vereinsgeschichte, Pädagogik, Team/Verein, Anmeldung, Finanzierung, Karriere und die Informationsseite wurden redaktionell überarbeitet. Die Chronik verwendet ausschließlich die bereits dokumentierten Stationen von 2004, 2012, 2013 und 2018. Ergänzungen an der Chronik erfolgen direkt in den `li`-Elementen mit der Klasse `history-timeline`; historische Erinnerungen und Fotos müssen vor der Aufnahme belegt beziehungsweise freigegeben sein.
+
+Vor einer Veröffentlichung dieser Textfassung mit der Leitung abgleichen:
+
+- Betreuungsmodelle: bisheriges U3-Abholende um 15 Uhr gegenüber allgemeinen Öffnungszeiten bis 16 Uhr; Überschneidung von Ü3-Mittagessen und Ruhezeit. Die Zeitangaben wurden nicht eigenmächtig geändert.
+- Aktueller Stand des vollständigen pädagogischen Konzepts und des bisher genannten Würzburger Sprachprogramms. Veraltete Ankündigungen werden im Text nicht als laufende Angebote dargestellt.
+- Geltende Beiträge, Eingewöhnungsablauf und verfügbare Stellen. Keine unbestätigten Preise, Zeitversprechen oder Arbeitgeberleistungen ergänzt.
+
+Diese Inhaltsrunde ist zunächst lokal. Ein Push auf den Entwurfsbranch löst das Hetzner-Vorschaudeployment aus und wird deshalb für eine rein lokale Abstimmung zurückgehalten.
