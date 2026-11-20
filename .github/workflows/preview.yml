@@ -40,7 +40,7 @@ jobs:
           test "$preview_target" != "$HETZNER_TARGET_DIR"
           lftp -u "$HETZNER_USER","$HETZNER_PASSWORD" -p "$HETZNER_PORT" sftp://"$HETZNER_HOST" <<EOF
           set sftp:auto-confirm yes
-          mirror --reverse --delete --verbose --exclude-glob .preview-build "$RUNNER_TEMP/schlosszwerge-preview"/ "$preview_target"/
+          mirror --reverse --delete --verbose --exclude-glob .preview-build --exclude-glob .well-known "$RUNNER_TEMP/schlosszwerge-preview"/ "$preview_target"/
           bye
           EOF
       - name: Verify HTTPS and indexing protection
