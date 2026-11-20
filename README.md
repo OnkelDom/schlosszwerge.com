@@ -2,7 +2,7 @@
 
 Die Website besteht aus normalen **HTML5-Seiten und einer CSS-Datei**. Es gibt kein CMS, kein Framework, keine Paketinstallation und keinen Build-Schritt. Die HTML-Dateien sind die tatsächlich ausgelieferten Seiten.
 
-Der Entwurf liegt im Branch `codex/modern-html-css-website`. Er ist zur lokalen Ansicht vorgesehen. Die öffentliche Website wird weiterhin aus `main` ausgeliefert.
+Der Entwurf liegt im Branch `codex/modern-html-css-website`. Er ist zur lokalen Ansicht und zur Entscheidungsvorschau unter https://dev.schlosszwerge.com/ vorgesehen. Die öffentliche Hauptwebsite wird weiterhin aus `main` ausgeliefert.
 
 ## Lokal ansehen
 
@@ -110,7 +110,34 @@ Aus Sicht des Betriebs bleibt die Architektur statisch: GitHub ist die Quelle, A
 
 - Pull Requests: `.github/workflows/validate.yml` prüft die Website.
 - Push auf `main`: `.github/workflows/deploy.yml` prüft erneut und überträgt anschließend per SFTP in den Domain-Ordner `schlosszwerge.com`.
-- Der Entwurfsbranch wird nicht automatisch veröffentlicht. Ein späterer Merge nach `main` ist eine produktive Veröffentlichung und gehört nicht zur lokalen Entwurfsprüfung.
+- Der Entwurfsbranch aktualisiert ausschließlich die Entscheidungsvorschau auf `dev.schlosszwerge.com`. Ein späterer Merge nach `main` ist eine produktive Veröffentlichung und gehört nicht zur Entwurfsprüfung.
 - Die bestehenden `HETZNER_*`-Secrets bleiben unverändert. Zugangsdaten gehören nicht in HTML oder Git.
 
 Vor einer späteren Veröffentlichung sind die bestehenden Terminangaben fachlich zu prüfen: In der übernommenen Tabelle für 2026 passen einzelne Wochentage und Jahreswechselangaben nicht zusammen. Diese Daten wurden beim Designwechsel nicht neu festgelegt. Impressum und Website-Datenschutzhinweise wurden am 20.11.2026 anhand amtlicher Quellen, des aktuellen Vereinsregisterauszugs und des technischen Entwurfs überarbeitet. Die noch offenen fachlichen Prüfungen (insbesondere unabhängige DSB-Rolle, tatsächliche Log-/Löschkonfiguration und gegebenenfalls erteilte Steuer-Identifikationsnummern) stehen im [Prüfprotokoll in Outline](https://docs.lenmail.de/doc/website-impressum-und-datenschutz-prufung-und-entwurfsstand-20112026-IeGwmolqAt). Der Entwurf ist dadurch nicht automatisch produktiv oder abschließend rechtlich freigegeben.
+
+## Entscheidungsvorschau auf Hetzner
+
+Der Entwurf wird unter **https://dev.schlosszwerge.com/** zur Abstimmung bereitgestellt. Der Link ist ohne Anmeldung aufrufbar. Ein Hinweis im Seitenkopf kennzeichnet die Website als Entwurf.
+
+Die Vorschau verwendet ein eigenes Webroot `schlosszwerge-vorschau`, getrennt vom Domain-Ordner `schlosszwerge.com`. Die neue Subdomain wird in konsoleH verwaltet und verwendet ein eigenes Let's-Encrypt-Zertifikat.
+
+Der Workflow `.github/workflows/preview.yml` aktualisiert ausschließlich dieses Vorschauverzeichnis bei einem Push auf `codex/modern-html-css-website`. Anschließend prüft er HTTPS, die Seiten und den Indexierungsschutz. Der Produktionsworkflow wird dafür nicht gestartet; ein Merge nach `main` bleibt ein gesonderter Schritt.
+
+Das Vorschaupaket wird mit `.github/scripts/build_preview.py` erstellt. Dabei werden nur HTML-Seiten und tatsächlich referenzierte Assets übernommen. Git-Metadaten, interne Dokumentation und Zugangsdaten gehören nicht ins Paket. Die Originaldateien behalten ihre produktiven Einstellungen.
+
+Indexierungsschutz der Vorschau:
+
+- HTTP-Header `X-Robots-Tag: noindex, nofollow, noarchive, nosnippet` für alle Antworten, auch PDFs und Fehlerseiten.
+- Zusätzlicher `robots`-Meta-Tag mit `noindex` in jeder HTML-Seite.
+- Keine Sitemap und keine Canonical-Verweise auf die Produktionswebsite im Vorschaupaket.
+- `robots.txt` erlaubt den Abruf, damit Suchmaschinen die `noindex`-Anweisung lesen können. Ein pauschales Crawling-Verbot würde diesen Mechanismus behindern.
+- Verzeichnisauflistung deaktiviert; HTTP wird auf HTTPS umgeleitet. Der ACME-Prüfpfad ist für die Zertifikatserneuerung von dieser Weiterleitung ausgenommen.
+
+Lokales Erstellen und Prüfen:
+
+```bash
+python3 .github/scripts/build_preview.py
+python3 .github/scripts/check_preview_http.py --base-url https://dev.schlosszwerge.com
+```
+
+Das lokale Paket liegt in `.preview-site/` und wird von Git ignoriert. Die normale lokale Vorschau der bearbeitbaren Quelldateien funktioniert weiterhin wie oben beschrieben.

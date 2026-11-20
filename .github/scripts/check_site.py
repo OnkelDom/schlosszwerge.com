@@ -68,7 +68,7 @@ class Page(HTMLParser):
 
 
 errors = []
-sources = {path: path.read_text() for path in ROOT.rglob("*.html")}
+sources = {path: path.read_text() for path in ROOT.rglob("*.html") if not path.is_relative_to(ROOT / ".preview-site")}
 pages = {path: Page(source) for path, source in sources.items()}
 for path, page in pages.items():
     source = sources[path]
