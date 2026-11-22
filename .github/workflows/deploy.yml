@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:
 
 concurrency:
   group: deploy-production
@@ -18,8 +17,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Validate site before deployment
-        run: python3 .github/scripts/check_site.py
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Build and validate static website
+        run: |
+          python -m pip install -r .github/scripts/requirements.txt
+          python .github/scripts/build_site.py --output "$RUNNER_TEMP/site"
+          python .github/scripts/check_site.py --root "$RUNNER_TEMP/site"
 
       - name: Install deployment tools
         run: sudo apt-get update && sudo apt-get install -y lftp
@@ -39,16 +44,6 @@ jobs:
           test -n "$HETZNER_TARGET_DIR"
 
           build_dir="$RUNNER_TEMP/site"
-          rm -rf "$build_dir"
-          mkdir -p "$build_dir"
-
-          rsync -a \
-            --exclude='.git/' \
-            --exclude='.github/' \
-            --exclude='.gitignore' \
-            --exclude='README.md' \
-            ./ "$build_dir"/
-
           lftp -u "$HETZNER_USER","$HETZNER_PASSWORD" -p "$HETZNER_PORT" sftp://"$HETZNER_HOST" <<EOF
           set sftp:auto-confirm yes
           mirror --reverse --delete --verbose "$build_dir"/ "$HETZNER_TARGET_DIR"/
