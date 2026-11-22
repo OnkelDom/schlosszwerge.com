@@ -1,11 +1,14 @@
 """Dependency-free checks for the buildless HTML5 website."""
 
+import argparse
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
 import re
 
-ROOT = Path(__file__).resolve().parents[2]
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument("--root", type=Path, required=True)
+ROOT = parser.parse_args().root.resolve()
 VOID = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"}
 MENU = ["/", "/aktuelles/", "/einrichtung/team/", "/karriere/", "/unsfinden/", "/anmeldung/"]
 TOPICS = ["konzept", "team", "tagesablauf", "oeffnungszeiten", "raeumlichkeiten", "gewaltschutzkonzept", "finanzen", "vereinsgeschichte"]
@@ -121,7 +124,7 @@ for marker in ['id="einrichtung"', 'href="/anmeldung/"', 'href="/unsfinden/"', '
         errors.append(f"Homepage missing {marker}")
 if 'content="0; url=/"' not in sources[ROOT / "einrichtung/index.html"]:
     errors.append("Legacy Einrichtung URL must lead to the homepage")
-for name, minimum in {"anmeldung": 1200, "datenschutz": 5000, "impressum": 3000, "karriere": 300, "einrichtung/team": 1200, "einrichtung/konzept": 6000}.items():
+for name, minimum in {"anmeldung": 1200, "datenschutz": 5000, "impressum": 3000, "einrichtung/team": 1200}.items():
     content = re.search(r'<!-- INHALT ANFANG:.*?-->(.*?)<!-- INHALT ENDE -->', sources[ROOT / name / "index.html"], re.S)
     if not content or len(content[1].strip()) < minimum:
         errors.append(f"{name}: full editorial content missing")

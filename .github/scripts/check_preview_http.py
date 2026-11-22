@@ -26,7 +26,7 @@ def verify(base_url):
     base_url = base_url.rstrip("/")
     if not base_url.startswith("https://"):
         raise ValueError("Preview must use HTTPS")
-    sources = [path for path in ROOT.rglob("*.html") if not path.is_relative_to(ROOT / ".preview-site") and ".git" not in path.parts]
+    sources = [path for path in ROOT.rglob("*.html") if not path.is_relative_to(ROOT / ".preview-site") and not path.is_relative_to(ROOT / ".site-build") and ".git" not in path.parts]
     routes = ["/" if p == ROOT / "index.html" else "/" + p.relative_to(ROOT).as_posix().removesuffix("index.html") for p in sources]
     routes += ["/assets/css/main.css", "/assets/js/site.js", "/assets/pdf/Gewaltschutzkonzept.pdf", "/robots.txt"]
 

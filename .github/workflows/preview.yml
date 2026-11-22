@@ -15,10 +15,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Validate source website
-        run: python3 .github/scripts/check_site.py
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Build and validate static website
+        run: |
+          python -m pip install -r .github/scripts/requirements.txt
+          python .github/scripts/build_site.py --output "$RUNNER_TEMP/site"
+          python .github/scripts/check_site.py --root "$RUNNER_TEMP/site"
       - name: Package preview with indexing disabled
-        run: python3 .github/scripts/build_preview.py --output "$RUNNER_TEMP/schlosszwerge-preview" --base-url https://dev.schlosszwerge.com
+        run: python3 .github/scripts/build_preview.py --source "$RUNNER_TEMP/site" --output "$RUNNER_TEMP/schlosszwerge-preview" --base-url https://dev.schlosszwerge.com
       - name: Install deployment tools
         run: sudo apt-get update && sudo apt-get install -y lftp
       - name: Upload to the isolated preview directory

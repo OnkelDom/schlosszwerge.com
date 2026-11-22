@@ -24,14 +24,15 @@ class References(HTMLParser):
                 self.urls.append(attrs[name])
 
 
-def build(destination, base_url):
+def build(source, destination, base_url):
+    source = source.resolve()
     url = urlsplit(base_url)
     if url.scheme != "https" or not url.hostname or url.path not in ("", "/") or url.query or url.fragment or url.username or url.password:
         raise ValueError("Preview URL must be an HTTPS origin without credentials or a path")
     if not re.fullmatch(r"[a-z0-9.-]+", url.hostname):
         raise ValueError("Invalid preview hostname")
     destination = destination.resolve()
-    if destination == ROOT or destination in ROOT.parents:
+    if destination in {ROOT, source} or destination in ROOT.parents or destination in source.parents:
         raise ValueError("Output cannot replace the repository or a parent directory")
     if destination.exists():
         if not (destination / ".preview-build").is_file():
@@ -39,22 +40,22 @@ def build(destination, base_url):
         shutil.rmtree(destination)
     destination.mkdir(parents=True)
     (destination / ".preview-build").write_text("Generated preview; not a production source directory.\n")
-    source_pages = sorted(path for path in ROOT.rglob("*.html") if not path.is_relative_to(destination) and not path.is_relative_to(ROOT / ".preview-site") and ".git" not in path.parts)
+    source_pages = sorted(source.rglob("*.html"))
     files = set(source_pages)
     for path in source_pages:
         for reference in References(path.read_text()).urls:
             target = urlsplit(reference)
             if target.scheme or target.netloc or not target.path:
                 continue
-            local = ROOT / unquote(target.path).lstrip("/") if target.path.startswith("/") else path.parent / unquote(target.path)
+            local = source / unquote(target.path).lstrip("/") if target.path.startswith("/") else path.parent / unquote(target.path)
             if local.is_dir():
                 local /= "index.html"
             local = local.resolve()
-            if not local.is_relative_to(ROOT) or not local.is_file():
+            if not local.is_relative_to(source) or not local.is_file():
                 raise ValueError(f"Invalid local asset: {reference}")
             files.add(local)
     for path in sorted(files):
-        relative = path.relative_to(ROOT)
+        relative = path.relative_to(source)
         output = destination / relative
         output.parent.mkdir(parents=True, exist_ok=True)
         if path.suffix == ".html":
@@ -87,7 +88,8 @@ RewriteRule ^ https://{url.hostname}%{{REQUEST_URI}} [R=302,L,NE]
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--source", type=Path, required=True)
     parser.add_argument("--output", type=Path, default=ROOT / ".preview-site")
     parser.add_argument("--base-url", default="https://dev.schlosszwerge.com")
     args = parser.parse_args()
-    build(args.output, args.base_url)
+    build(args.source, args.output, args.base_url)
