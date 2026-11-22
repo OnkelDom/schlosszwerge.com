@@ -1,75 +1,52 @@
 # Die Schlosszwerge – Website
 
-Die Website besteht aus normalen **HTML5-Seiten und einer CSS-Datei**. Es gibt kein CMS, kein Framework, keine Paketinstallation und keinen Build-Schritt. Die HTML-Dateien sind die tatsächlich ausgelieferten Seiten.
-
-Der Entwurf liegt im Branch `codex/modern-html-css-website`. Er ist zur lokalen Ansicht und zur Entscheidungsvorschau unter https://dev.schlosszwerge.com/ vorgesehen. Die öffentliche Hauptwebsite wird weiterhin aus `main` ausgeliefert.
+Die Website wird als statisches HTML und CSS ausgeliefert. GitHub Actions setzt redaktionelle Markdown-Texte in feste HTML-Vorlagen ein und prüft das Ergebnis.
 
 ## Lokal ansehen
 
-Im Repository-Verzeichnis:
-
 ```bash
 git switch codex/modern-html-css-website
-python3 -m http.server 8084 --bind 127.0.0.1
+python3 -m venv .venv
+.venv/bin/python -m pip install -r .github/scripts/requirements.txt
+.venv/bin/python .github/scripts/build_site.py --output .site-build
+.venv/bin/python -m http.server 8084 --bind 127.0.0.1 --directory .site-build
 ```
 
-Danach [http://127.0.0.1:8084/](http://127.0.0.1:8084/) öffnen. Der Server läuft bis `Strg+C`. Nach einer Änderung die Browserseite neu laden. Zum Bearbeiten beispielsweise:
-
-```bash
-vim index.html
-vim einrichtung/team/index.html
-vim assets/css/main.css
-```
-
-Die Vorschau braucht einen lokalen Webserver, weil Links und Bilder mit `/` beginnen. Eine HTML-Datei per Doppelklick zu öffnen genügt deshalb nicht.
+Aufruf: [http://127.0.0.1:8084/](http://127.0.0.1:8084/). Für einen erneuten Build einen neuen Ausgabeordner wählen oder den bisherigen generierten Ordner vorher verschieben. Texte lassen sich auch lokal bearbeiten, etwa mit `vim inhalte/vereinsgeschichte.md`.
 
 ## Texte direkt über GitHub ändern
 
-1. Oben links den gewünschten Branch auswählen. Für die Entwurfsprüfung `codex/modern-html-css-website` verwenden.
-2. Die passende HTML-Datei aus der Tabelle unten öffnen und auf das Stiftsymbol klicken.
-3. Nach `INHALT ANFANG` suchen. Zwischen diesem Kommentar und `INHALT ENDE` stehen die Texte der Unterseite. Auf der Startseite heißen die Markierungen `STARTSEITE ANFANG` und `STARTSEITE ENDE`.
-4. Nur den gewünschten Text ändern und die umgebenden HTML-Tags stehen lassen.
-5. Die Änderung mit einer kurzen Beschreibung committen. Der Pull Request prüft automatisch HTML-Struktur, Navigation und lokale Verweise.
+1. In GitHub den Branch `codex/modern-html-css-website` auswählen und die passende Markdown-Datei öffnen.
+2. Auf das Stiftsymbol klicken. Eine Leerzeile trennt Absätze, `##` beginnt eine Überschrift und `###` eine Unterüberschrift.
+3. In einem neuen Arbeitsbranch speichern und den Pull Request gegen `codex/modern-html-css-website` öffnen. GitHub prüft die erzeugte Website.
+4. Nach erfolgreicher Prüfung in den Entwurfsbranch mergen. Dadurch aktualisiert GitHub die [Dev-Vorschau](https://dev.schlosszwerge.com/).
 
-Ein Absatz sieht so aus:
+```markdown
+## Unsere neue Überschrift
 
-```html
-<p>Hier steht der Text, der auf der Website erscheint.</p>
+Hier steht der Text für die Website.
+
+[Mehr zur Anmeldung](/anmeldung/)
 ```
 
-Eine Überschrift und ein Link:
-
-```html
-<h2>Unsere neue Überschrift</h2>
-<p>Mehr erfahren Sie auf der <a href="/anmeldung/">Anmeldeseite</a>.</p>
-```
-
-Ein Bild: Datei nach `assets/images/` hochladen und im HTML referenzieren. Ein aussagekräftiger Alternativtext beschreibt das Bild für Menschen, die es nicht sehen können.
-
-```html
-<img src="/assets/images/mein-neues-bild.jpg"
-     alt="Der neu gestaltete Gruppenraum"
-     loading="lazy">
-```
-
-Bei Bildern von Menschen müssen die erforderlichen Freigaben vorliegen. Der Entwurf verwendet vorhandene Raum- und Geländefotos; die früher entfernten Teamfotos werden nicht wieder eingebunden.
+Zusätze wie `{#verein-heute}` an bestehenden Überschriften erhalten alte Direktlinks. Bilder nach `assets/images/` hochladen und mit `![Der Gruppenraum](/assets/images/gruppenraum.jpg)` einbinden. Historische Fotos und Fotos von Personen vorab freigeben lassen.
 
 ## Welche Datei gehört zu welcher Seite?
 
 | Seite | Datei |
 | --- | --- |
 | Startseite / Einrichtungsübersicht | `index.html` |
-| Aktuelles | `aktuelles/index.html` |
+| Aktuelles | `inhalte/aktuelles.md` und `inhalte/meldungen/` |
 | Anmeldung und Mitgliedschaft | `anmeldung/index.html` |
 | Team und Vorstand | `einrichtung/team/index.html` |
-| Pädagogisches Konzept | `einrichtung/konzept/index.html` |
+| Pädagogisches Konzept | `inhalte/paedagogik.md` |
 | Gewaltschutzkonzept | `einrichtung/gewaltschutzkonzept/index.html` |
 | Tagesablauf | `einrichtung/tagesablauf/index.html` |
 | Öffnungszeiten und Termine | `einrichtung/oeffnungszeiten/index.html` |
 | Räume und Außengelände | `einrichtung/raeumlichkeiten/index.html` |
 | Finanzierung und Unterstützung | `einrichtung/finanzen/index.html` |
-| Vereinsgeschichte | `einrichtung/vereinsgeschichte/index.html` |
-| Karriere | `karriere/index.html` |
+| Vereinsgeschichte | `inhalte/vereinsgeschichte.md` |
+| Karriere | `inhalte/karriere.md` |
 | Kontakt und Anfahrt | `unsfinden/index.html` |
 | Impressum / Datenschutz | `impressum/index.html` / `datenschutz/index.html` |
 | Seitenübersicht / Fehlerseite | `categories/index.html` / `404.html` |
@@ -78,15 +55,15 @@ Bei Bildern von Menschen müssen die erforderlichen Freigaben vorliegen. Der Ent
 
 ## Eine Neuigkeit ergänzen
 
-In `aktuelles/index.html` innerhalb der Inhaltsmarkierungen einen solchen Block einfügen. Das Datum und alle Beispieltexte ersetzen und den Hinweis „Hier gibt es bald Neues“ entfernen, sobald die erste tatsächliche Meldung veröffentlicht wird:
+Unter `inhalte/meldungen/` eine Datei wie `2026-11-22-vereinsfest.md` anlegen. Das Datum im Dateinamen bestimmt Anzeige und Sortierung. Die neueste Meldung steht oben.
 
-```html
-<article>
-  <p class="eyebrow"><time datetime="2026-11-20">20. November 2026</time></p>
-  <h2>Überschrift der tatsächlichen Neuigkeit</h2>
-  <p>Hier den freigegebenen Text der Meldung eintragen.</p>
-</article>
+```markdown
+## Überschrift der Meldung
+
+Hier steht der freigegebene Text.
 ```
+
+Für eine neue Station der Vereinsgeschichte einen vorhandenen Eintrag aus der nummerierten Markdown-Liste kopieren. Die eingerückten Zeilen gehören zur jeweiligen Station.
 
 ## Layout und gemeinsame Angaben
 
@@ -98,17 +75,17 @@ In `aktuelles/index.html` innerhalb der Inhaltsmarkierungen einen solchen Block 
 ## Technische Prüfung
 
 ```bash
-python3 .github/scripts/check_site.py
+python3 .github/scripts/check_site.py --root .site-build
 node --check assets/js/site.js
 ```
 
-Python prüft alle HTML-Seiten ohne zusätzliche Bibliotheken. Node ist ausschließlich für die optionale Syntaxprüfung des kleinen Skripts nötig; zum Bearbeiten und Ausliefern der Website wird Node nicht gebraucht.
+Python prüft die erzeugten HTML-Dateien. HTML-Tags im Markdown werden als Text dargestellt. Node prüft die Syntax des Navigationsskripts.
 
 ## Betrieb und Veröffentlichung
 
 Aus Sicht des Betriebs bleibt die Architektur statisch: GitHub ist die Quelle, Apache auf dem Hetzner-Webspace liefert die Dateien aus. Schriften, Bilder, CSS und JavaScript werden lokal vom selben Webspace geladen. Es gibt keine externe Schriftbibliothek, kein Tracking und keine serverseitige Anwendung.
 
-- Pull Requests: `.github/workflows/validate.yml` prüft die Website.
+- Pull Requests: `.github/workflows/validate.yml` baut und prüft die Website. Für `main` verlangt GitHub den erfolgreichen Check `validate` und eine unabhängige Freigabe, auch bei Admins.
 - Push auf `main`: `.github/workflows/deploy.yml` prüft erneut und überträgt anschließend per SFTP in den Domain-Ordner `schlosszwerge.com`.
 - Der Entwurfsbranch aktualisiert ausschließlich die Entscheidungsvorschau auf `dev.schlosszwerge.com`. Ein späterer Merge nach `main` ist eine produktive Veröffentlichung und gehört nicht zur Entwurfsprüfung.
 - Die bestehenden `HETZNER_*`-Secrets bleiben unverändert. Zugangsdaten gehören nicht in HTML oder Git.
@@ -136,15 +113,15 @@ Indexierungsschutz der Vorschau:
 Lokales Erstellen und Prüfen:
 
 ```bash
-python3 .github/scripts/build_preview.py
+.venv/bin/python .github/scripts/build_preview.py --source .site-build
 python3 .github/scripts/check_preview_http.py --base-url https://dev.schlosszwerge.com
 ```
 
-Das lokale Paket liegt in `.preview-site/` und wird von Git ignoriert. Die normale lokale Vorschau der bearbeitbaren Quelldateien funktioniert weiterhin wie oben beschrieben.
+Das lokale Paket liegt in `.preview-site/` und wird von Git ignoriert. Die lokale Vorschau verwendet die gerenderten Dateien in `.site-build`.
 
 ## Lokaler Inhaltsentwurf (20.11.2026)
 
-Vereinsgeschichte, Pädagogik, Team/Verein, Anmeldung, Finanzierung, Karriere und die Informationsseite wurden redaktionell überarbeitet. Die Chronik verwendet ausschließlich die bereits dokumentierten Stationen von 2004, 2012, 2013 und 2018. Ergänzungen an der Chronik erfolgen direkt in den `li`-Elementen mit der Klasse `history-timeline`; historische Erinnerungen und Fotos müssen vor der Aufnahme belegt beziehungsweise freigegeben sein.
+Vereinsgeschichte, Pädagogik, Team/Verein, Anmeldung, Finanzierung, Karriere und die Informationsseite wurden redaktionell überarbeitet. Die Chronik verwendet ausschließlich die bereits dokumentierten Stationen von 2004, 2012, 2013 und 2018. Ergänzungen stehen in `inhalte/vereinsgeschichte.md`. Historische Erinnerungen und Fotos müssen vor der Aufnahme belegt beziehungsweise freigegeben sein.
 
 Vor einer Veröffentlichung dieser Textfassung mit der Leitung abgleichen:
 
